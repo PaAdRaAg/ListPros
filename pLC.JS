@@ -1,12 +1,12 @@
 class Proceso{
     constructor(noProceso){
         this.noProceso = noProceso;
-        this.neCiclos = Math.floor(Math.random()*(15-4))+4;
+		this.neCiclos = Math.floor(Math.random()*(15-4))+4;
         this.siguiente = null;
     };
 };
 
-class Procesador{
+class Registro{
     constructor(){
         this.inicio = null;
         this.proceso = new Proceso();
@@ -63,82 +63,82 @@ class Procesador{
 			do {
 				p += aux.neCiclos;
 				aux = aux.siguiente;
-			} while(aux != this.inicio) {
+			}
+			while(aux != this.inicio) {
 				return p;
 			};
 		} else {
 			return null;
 		};
-    };
-
-    eliminar(noProceso){
-        let aux = this.inicio;
-        let anterior = null;
-        let auxi
-
-        if(aux.noProceso == noProceso){
-            this.inicio = aux.siguiente;
-            auxi = this.inicio;
-
-            while(auxi.siguiente.noProceso !== noProceso){
-                auxi = auxi.siguiente;
-            };
-            auxi.siguiente = this.inicio;
-        } else{
-            while(aux != null){
-                if(aux.noProceso == noProceso){
-                    if(!anterior){
-                        this.inicio = aux.siguiente;
-                    } else{
-                        anterior.siguiente = aux.siguiente;
-                    };
-                    return aux.noProceso;
-                };
-                anterior = aux;
-                aux = aux.siguiente;
-            };
-            return null;
+	};
+	
+	buscar(noProceso) {
+		let aux = this.inicio;
+		do {
+			if (aux.siguiente.noProceso == noProceso) {
+				return aux;
+			} else {
+				aux = aux.siguiente;
+			};
+		}
+		while(aux != this.inicio) {
+			return null;
 		};
 	};
+
+    eliminar(noProceso){
+		let aux = this.buscar(noProceso);
+
+		if (aux != null) {
+			if (aux.siguiente == this.inicio) {
+				if (aux == this.inicio) {
+					this.inicio = null;
+				} else {
+					this.inicio = aux.siguiente.siguiente;
+					aux.siguiente = this.inicio;
+				};
+			} else {
+				aux.siguiente = aux.siguiente.siguiente;
+			};
+			return true;
+		} else {
+			return null;
+		};
+	};
+
 };
 
 var btnI = document.querySelector('#btnI');
-var pros = new Procesador();
+var reg = new Registro();
 var emp = 0;
-var n = 1
-var completado = 0
+var n = 1;
+var completado = 0;
 
 btnI.addEventListener('click', () => {
 
     for (let i = 1; i <= 300; i++) {
 		let probabilidad = Math.trunc(Math.random()*100);
-
         if (probabilidad <= 39) {
 			let pro = new Proceso("P" + n);
-			pros.agregar(pro);
-            if (n != 0) {
-                aux = this.inicio;
-            	n++;            
-            
-            }else {
+			reg.agregar(pro);
+            if (n) {
+                aux = reg.inicio;
+				n++;
 				aux.neCiclos--;
-            	if (aux.neCiclos == 0) {
-                	pros.eliminar(aux);
+				if(aux.neCiclos == 0){
+					reg.eliminar(aux.noProceso);
 					completado++;
-
-				}	
-				aux = aux.siguiente;	
-            };
-
+				};
+				aux = aux.siguiente;
+			};
         } else {
             emp++;
         };        
-
-		pros.imprimir();
+		reg.imprimir();
     };
     
-    console.log("Procesos vacíos: " + emp);
+	console.log("Ciclos vacíos: " + emp);
+	console.log("Procesos Pendientes: " + reg.pendientes());
+	console.log("Total de Ciclos Pendientes: " + reg.pendientesTotales());
     console.log("Procesos Completados: " + completado);
-    console.log('Ciclos Pendientes: ' + pros.pendientes());
-    console.log('Total de Ciclos Pendientes: ' + pros.pendientesTotales());
 });

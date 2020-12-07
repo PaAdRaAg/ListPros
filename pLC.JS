@@ -10,7 +10,6 @@ class Procesador{
     constructor(){
         this.inicio = null;
         this.proceso = new Proceso();
-        this.probabilidad = Math.floor(Math.random()*(100));
     };
 
     agregar(proceso){
@@ -111,24 +110,30 @@ var completado = 0
 
 btnI.addEventListener('click', () => {
 
-    for (let i = 0; i <= 300; i++) {
-        if (Math.trunc(Math.random()*100) <= 39) {
-            pros.agregar(new Proceso("P" + n));
-            if (n != null) {
-                aux = pros.inicio;
+    for (let i = 1; i <= 300; i++) {
+		let probabilidad = Math.trunc(Math.random()*100);
+
+        if (probabilidad <= 39) {
+			let pro = new Proceso("P" + n);
+			pros.agregar(pro);
+            if (n != 0) {
+                aux = this.inicio;
             	n++;            
             
-            }else if (pros.inicio) {
-            	pros.inicio.neCiclos--;
-            if (pros.inicio.neCiclos == 0) {
-                pros.eliminar(pros.inicio);
-                completado++;
+            }else {
+				aux.neCiclos--;
+            	if (aux.neCiclos == 0) {
+                	pros.eliminar(aux);
+					completado++;
+
+				}	
+				aux = aux.siguiente;	
             };
-            aux = aux.siguiente;	
+
         } else {
             emp++;
         };        
-    };
+
 		pros.imprimir();
     };
     

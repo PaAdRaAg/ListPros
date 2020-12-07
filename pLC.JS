@@ -11,7 +11,7 @@ class Procesador{
         this.inicio = null;
         this.proceso = new Proceso();
         this.probabilidad = Math.floor(Math.random()*(100));
-    }
+    };
 
     agregar(proceso){
 
@@ -42,21 +42,8 @@ class Procesador{
 		};
     };
 
-    buscar(noProceso) {
-		var aux = this.inicio;
-		do {
-			if (aux.siguiente.noProceso == noProceso) {
-				return aux;
-			} else {
-				aux = aux.siguiente;
-			} 
-		} while(aux != this.inicio) {
-				return null;
-			}
-	}
-
     pendientes() {
-		if (this.inicio) {
+		if (this.inicio != null) {
 			var p = 0;
 			var aux = this.inicio;
 			do {
@@ -71,7 +58,7 @@ class Procesador{
     };
 
     pendientesTotales() {
-		if (this.inicio) {
+		if (this.inicio != null) {
 			var p = 0;
 			var aux = this.inicio;
 			do {
@@ -86,23 +73,34 @@ class Procesador{
     };
 
     eliminar(noProceso){
-		var n = this.buscar(noProceso);
-		if (n) {
-			if (n.siguiente == this.inicio) {
-				if (n == this.inicio) {
-					this.inicio = null;
-				} else {
-					this.inicio = n.siguiente.siguiente;
-					n.siguiente = this.inicio;
-				}
-			} else {
-				n.siguiente = n.siguiente.siguiente;
-			}
-			return true;
-		} else {
-			return null;
-		}
-	}
+        let aux = this.inicio;
+        let anterior = null;
+        let auxi
+
+        if(aux.noProceso == noProceso){
+            this.inicio = aux.siguiente;
+            auxi = this.inicio;
+
+            while(auxi.siguiente.noProceso !== noProceso){
+                auxi = auxi.siguiente;
+            };
+            auxi.siguiente = this.inicio;
+        } else{
+            while(aux != null){
+                if(aux.noProceso == noProceso){
+                    if(!anterior){
+                        this.inicio = aux.siguiente;
+                    } else{
+                        anterior.siguiente = aux.siguiente;
+                    };
+                    return aux.noProceso;
+                };
+                anterior = aux;
+                aux = aux.siguiente;
+            };
+            return null;
+		};
+	};
 };
 
 var btnI = document.querySelector('#btnI');
@@ -112,18 +110,18 @@ var n = 1
 var completado = 0
 
 btnI.addEventListener('click', () => {
-	let aux;
-    for (var i = 0; i < 300; i++) {
-        if (Math.trunc(Math.random()*100+1) <= 39) {
+
+    for (let i = 0; i <= 300; i++) {
+        if (Math.trunc(Math.random()*100) <= 39) {
             pros.agregar(new Proceso("P" + n));
-            if (n == 1) {
-                aux = pros.primero;
-            n++;            
+            if (n != null) {
+                aux = pros.inicio;
+            	n++;            
             
-            }else if (pros.primero) {
-            aux.neCiclos--;
-            if (aux.neCiclos == 0) {
-                pros.eliminar(aux);
+            }else if (pros.inicio) {
+            	pros.inicio.neCiclos--;
+            if (pros.inicio.neCiclos == 0) {
+                pros.eliminar(pros.inicio);
                 completado++;
             };
             aux = aux.siguiente;	
@@ -131,7 +129,7 @@ btnI.addEventListener('click', () => {
             emp++;
         };        
     };
-        pros.imprimir();
+		pros.imprimir();
     };
     
     console.log("Procesos vacíos: " + emp);
